@@ -6,22 +6,24 @@ Simple reuse of cache from previous browserify builds. Supports cache invalidati
 
 ```js
 var rebundler = require("rebundler");
-var build = rebundler(function(cache, packageCache) {
+var entry = rebundler(function(cache, packageCache) {
   return browserify("./entry.js", {
     cache: cache,
     packageCache: packageCache,
     fullPaths: true
     // ... other options
-  });
+  })
+  .transform('brfs')
+  //... etc
 });
-```
 
-```js
-// GET /entry.js will be slow the first time, but all subsequent requests will use the cache
-// from the previous build and be much faster
+// ...
+
+// GET /entry.js will be slow the first time, but all subsequent requests will re-use 
+// the cache from the previous build and be much faster
 
 app.get("/entry.js", function(req, res) {
-  rebundle()
+  entry()
     .bundle()
     .pipe(res);
 });
@@ -29,12 +31,9 @@ app.get("/entry.js", function(req, res) {
 
 ## API
 
-`fn rebundler(bundleFn)`
+`rebundler(browserifyFn)`
 
-bundleFn is a function that will be called with the `cache` and `packageCache` arguments
-This function must return a browserify instance.
-Important: The bundle must be created with the `fullPaths` option set to true.
+Where `browserifyFn` is a function that accepts a `cache` and `packageCache` arguments and returns a browserify instance.
+Important: The returned browserify instance must have its `fullPaths` option set to true.
 
-Returns a function that when called will pass the cache from its previous call to the `bundleFn`
-and return the new browserify instance. If any of the files included in the previous build has changed, they
-will be removed from the cache, and re-analyzed again in this build.
+`rebundler(browserifyFn)` Returns a function that, when called, will pass the cache from its previous call to the `browserifyFn` and return the created browserify instance. If any of the files included in the previous build has changed, they will be removed from the cache, and re-analyzed again by browserify.
