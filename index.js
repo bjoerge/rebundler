@@ -2,12 +2,20 @@ var fs = require("fs");
 
 module.exports = rebundler;
 
-function rebundler(bundleFn) {
+function rebundler(options, bundleFn) {
+  if (typeof options === 'function') {
+    bundleFn = options;
+    options = {}
+  }
   var cache = {};
   var pkgCache = {};
   var fileTimes = {};
 
   return function rebundle() {
+    if (options.noop === true) {
+      return bundleFn({}, {})
+    }
+
     var bundle = bundleFn(cache, pkgCache);
 
     bundle.on('dep', function (row) {

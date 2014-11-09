@@ -31,9 +31,15 @@ app.get("/entry.js", function(req, res) {
 
 ## API
 
-`rebundler(browserifyFn)`
+`rebundler([options], browserifyFn)`
 
 Where `browserifyFn` is a function that accepts a `cache` and `packageCache` arguments and returns a browserify instance.
 Important: The returned browserify instance must have its `fullPaths` option set to true.
 
 `rebundler(browserifyFn)` Returns a function that, when called, will pass the cache from its previous call to the `browserifyFn` and return the created browserify instance. If any of the files included in the previous build has changed, they will be removed from the cache, and re-analyzed again by browserify.
+
+### Options:
+
+The only option currently supported is:
+
+- `noop: true|false` Default false. If set to true, no cache checks/invalidation will be performed and the `browserifyFn` will be passed empty `cache` and `packageCache` objects on every call. This can be used to switch of caching behaviour in an production enviroment.
