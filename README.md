@@ -17,7 +17,8 @@ var build = rebundler(function(cache, packageCache) {
 ```
 
 ```js
-// GET /entry.js will be slow the first time, but all subsequent requests will use the same cache and be much faster
+// GET /entry.js will be slow the first time, but all subsequent requests will use the cache
+// from the previous build and be much faster
 
 app.get("/entry.js", function(req, res) {
   rebundle()
