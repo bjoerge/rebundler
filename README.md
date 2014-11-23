@@ -1,6 +1,7 @@
 # rebundler
 
-Simple reuse of cache from previous browserify builds. Supports cache invalidation without file watching.
+Simple reuse of cache from previous browserify builds. Supports cache invalidation without file watching and speeds up
+bundling.
 
 ## Usage
 
@@ -40,6 +41,5 @@ Important: The returned browserify instance must have its `fullPaths` option set
 
 ### Options:
 
-The only option currently supported is:
-
-- `noop: true|false` Default false. If set to true, no cache checks/invalidation will be performed and the `browserifyFn` will be passed empty `cache` and `packageCache` objects on every call. This can be used to switch of caching behaviour in an production enviroment.
+- `noop: true|false` Default false. If set to true, no cache checks/invalidation will be performed and the `browserifyFn` will be passed empty `cache` and `packageCache` objects on every call.
+- `persist: true|false` Default false. If set to true, rebundler will dump cached dependencies to a file on disk, and restore cache from this file when initialized later on.

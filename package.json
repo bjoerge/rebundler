@@ -3,9 +3,7 @@
   "version": "0.0.3",
   "description": "Simple reuse of cache from previous browserify builds. Supports cache invalidation without file watching.",
   "main": "index.js",
-  "scripts": {
-    "test": "npm test"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/bjoerge/rebundler"
@@ -13,12 +11,17 @@
   "keywords": [
     "browserify",
     "cache",
-    "bundle"
+    "bundle",
+    "speed"
   ],
   "author": "Bjørge Næss",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/bjoerge/rebundler/issues"
   },
-  "homepage": "https://github.com/bjoerge/rebundler"
+  "homepage": "https://github.com/bjoerge/rebundler",
+  "dependencies": {
+    "debounce": "^1.0.0",
+    "debug": "^2.1.0"
+  }
 }
