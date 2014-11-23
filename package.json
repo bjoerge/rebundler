@@ -1,6 +1,6 @@
 {
   "name": "rebundler",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Simple reuse of cache from previous browserify builds. Supports cache invalidation without file watching.",
   "main": "index.js",
   "scripts": {},
