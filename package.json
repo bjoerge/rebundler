@@ -3,7 +3,9 @@
   "version": "0.0.4",
   "description": "Simple reuse of cache from previous browserify builds. Supports cache invalidation without file watching.",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "standard"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/bjoerge/rebundler"
@@ -22,6 +24,10 @@
   "homepage": "https://github.com/bjoerge/rebundler",
   "dependencies": {
     "debounce": "^1.0.0",
-    "debug": "^2.1.0"
+    "debug": "^2.1.0",
+    "mkdirp": "^0.5.1"
+  },
+  "devDependencies": {
+    "standard": "^3.11.1"
   }
 }
