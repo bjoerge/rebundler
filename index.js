@@ -5,8 +5,6 @@ var debug = require('debug')('rebundler')
 var mkdirp = require('mkdirp')
 var path = require('path')
 
-var cacheDir = path.join(process.cwd(), '.rebundler-cache')
-
 module.exports = rebundler
 
 function restoreCache (file) {
@@ -49,6 +47,8 @@ function rebundler (options, bundleFn) {
     bundleFn = options
     options = {}
   }
+  
+  var cacheDir = options.cacheDir ? options.cacheDir : path.join(process.cwd(), '.rebundler-cache')
 
   var cache, cacheFile = null
   if (options.persist) {
@@ -56,6 +56,7 @@ function rebundler (options, bundleFn) {
     cacheFile = path.join(cacheDir, 'cache' + (options.persistKey ? '-' + options.persistKey : '') + '.json')
     cache = restoreCache(cacheFile)
   }
+
   cache = cache || {
       deps: {},
       pkgs: {},
