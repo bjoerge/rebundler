@@ -20,7 +20,7 @@ var entry = rebundler(function(cache, packageCache) {
 
 // ...
 
-// GET /entry.js will be slow the first time, but all subsequent requests will re-use 
+// GET /entry.js will be slow the first time, but all subsequent requests will re-use
 // the cache from the previous build and be much faster
 
 app.get("/entry.js", function(req, res) {
@@ -44,3 +44,4 @@ Important: The returned browserify instance must have its `fullPaths` option set
 - `noop: true|false` Default false. If set to true, no cache checks/invalidation will be performed and the `browserifyFn` will be passed empty `cache` and `packageCache` objects on every call.
 - `persist: true|false` Default false. If set to true, rebundler will dump cached dependencies to a file on disk, and restore cache from this file when initialized later on.
 - `persistKey: <string>` Defaults to `undefined`. Set this if creating multiple bundles in the same working directory.
+- `cacheDir: <string>` Defaults to `./.rebundler-cache`. If set, will move the cache directory.
