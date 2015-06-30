@@ -43,3 +43,4 @@ Important: The returned browserify instance must have its `fullPaths` option set
 
 - `noop: true|false` Default false. If set to true, no cache checks/invalidation will be performed and the `browserifyFn` will be passed empty `cache` and `packageCache` objects on every call.
 - `persist: true|false` Default false. If set to true, rebundler will dump cached dependencies to a file on disk, and restore cache from this file when initialized later on.
+- `persistKey: <string>` Defaults to `undefined`. Set this if creating multiple bundles in the same working directory.
