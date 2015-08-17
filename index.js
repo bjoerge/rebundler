@@ -1,9 +1,12 @@
+'use strict';
+
 var fs = require('fs')
 var debounce = require('debounce')
 var assert = require('assert')
 var debug = require('debug')('rebundler')
 var mkdirp = require('mkdirp')
 var path = require('path')
+var extend = require('xtend');
 
 module.exports = rebundler
 
@@ -40,6 +43,27 @@ function restoreCache (file) {
     debug('Unable to read cache from file %s: %s', file, e.stack)
     return null
   }
+}
+
+function invalidateExpired(cache) {
+  debug('Looking for modified deps invalidate');
+  Object.keys(cache.mtimes).forEach(function(file) {
+    var lastMtime = cache.mtimes[file];
+    try {
+      var currMtime = fs.statSync(file).mtime.getTime();
+      if (!currMtime || lastMtime < currMtime) {
+        debug('%s has changed since previous build, invalidating...', file);
+        delete cache.deps[file];
+      }
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        debug('%s has been removed since previous build, invalidating...', file);
+        delete cache.deps[file];
+      } else {
+        throw e;
+      }
+    }
+  });
 }
 
 function rebundler (options, bundleFn) {
@@ -85,30 +109,26 @@ function rebundler (options, bundleFn) {
       return bundleFn({}, {})
     }
 
+    invalidateExpired(cache);
+
+    var newCache = {
+      deps: extend({}, cache.deps),
+      mtimes: extend({}, cache.mtimes)
+    };
+
     var bundle = bundleFn(cache.deps, cache.pkgs)
 
-    bundle.on('dep', function (row) {
-      cache.deps[row.id] = row
-      cache.mtimes[row.id] = fs.statSync(row.id).mtime.getTime()
-    })
+    bundle.on('bundle', function(b) {
+      b.on('end', function() {
+        // Bundle successful, commit our new cache
+        cache.deps = newCache.deps;
+        cache.mtimes = newCache.mtimes;
+      });
+    });
 
-    debug('Looking for modified deps invalidate')
-    Object.keys(cache.mtimes).forEach(function (file) {
-      var lastMtime = cache.mtimes[file]
-      try {
-        var currMtime = fs.statSync(file).mtime.getTime()
-        if (!currMtime || lastMtime < currMtime) {
-          debug('%s has changed since previous build, invalidating...', file)
-          delete cache.deps[file]
-        }
-      } catch (e) {
-        if (e.code === 'ENOENT') {
-          debug('%s has been removed since previous build, invalidating...', file)
-          delete cache.deps[file]
-        } else {
-          throw e
-        }
-      }
+    bundle.on('dep', function (row) {
+      newCache.deps[row.id] = row
+      newCache.mtimes[row.id] = fs.statSync(row.id).mtime.getTime()
     })
 
     debug('Done looking for modified deps')
