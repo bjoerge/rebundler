@@ -71,14 +71,22 @@ function rebundler (options, bundleFn) {
     bundleFn = options
     options = {}
   }
-  
+
   var cacheDir = options.cacheDir ? options.cacheDir : path.join(process.cwd(), '.rebundler-cache')
 
   var cache, cacheFile = null
   if (options.persist) {
-    debug('Checking for persisted cache')
-    cacheFile = path.join(cacheDir, 'cache' + (options.persistKey ? '-' + options.persistKey : '') + '.json')
-    cache = restoreCache(cacheFile)
+    if (!options.persistKey) {
+      console.warn(
+        '[WARNING] Rebundler was called with "persist: true", but no persistKey. This means that the rebundler cache will ' +
+        'not invalidate between process restarts, even if the bundle options are modified (e.g if a plugin or transform is ' +
+        'added or removed). This is probably not the behaviour that you want, therefore no cache will be restored for this build.'
+      )
+    } else {
+      debug('Checking for persisted cache')
+      cacheFile = path.join(cacheDir, 'cache' + (options.persistKey ? '-' + options.persistKey : '') + '.json')
+      cache = restoreCache(cacheFile)
+    }
   }
 
   cache = cache || {
@@ -133,7 +141,7 @@ function rebundler (options, bundleFn) {
 
     debug('Done looking for modified deps')
 
-    if (options.persist) {
+    if (options.persist && options.persistKey) {
       bundle.on('dep', dump)
     }
 
